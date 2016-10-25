@@ -1,0 +1,594 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "1_VM_Size": {
+            "defaultValue": "Standard_F1s",
+            "type": "String"
+        },
+        "2_IaaS_User_Name": {
+            "type": "String",
+            "defaultValue": "POCAdmin"
+        },
+        "3_IaaS_Password": {
+            "type": "SecureString",
+            "metadata": {
+                "description": "Password for the Virtual Machine."
+            }
+        },
+        "4_Number_of_Disks": {
+            "type": "String",
+            "defaultValue": "0"
+        },
+        "5_Disk_Size_GB": {
+            "type": "String",
+            "defaultValue": "50"
+        },
+        "Tag_Vendor": {
+            "defaultValue": "BMC",
+            "type": "String"
+        },
+        "Tag_Cost_Center": {
+            "defaultValue": "DCS1001029",
+            "type": "String"
+        },
+		"Tag_HLBO": {
+            "defaultValue": "0845",
+            "type": "String"
+        },
+		        },
+		"Tag_Environment": {
+            "defaultValue": "0845",
+            "type": "String"
+        },
+		"Tag_Resource_Roles": {
+            "defaultValue": "VM",
+            "type": "String"
+        },
+		"Tag_Business_Function": {
+            "defaultValue": "IT Service Relationship Management",
+            "type": "String"
+        },
+		"Tag_Support_Org": {
+            "defaultValue": "US_Mktg_East",
+            "type": "String"
+        },
+		"Tag_Facilities": {
+            "defaultValue": "ABE",
+            "type": "String"
+        },
+        "Tag_Project_Name": {
+            "defaultValue": "proj1",
+            "type": "String"
+        }
+    },
+    "variables": {
+        "IaaS_Name": "[replace(resourceGroup().name,'-','')]",
+        "numDisks": "[int(parameters('4_Number_of_Disks'))]",
+        "sizeOfDataDisksInGB": "[parameters('5_Disk_Size_GB')]",
+        "3_IaaS_Password": "[parameters('3_IaaS_Password')]",
+        "diskArray1": [
+            {
+                "name": "datadisk1",
+                "lun": 0,
+                "vhd": {
+                    "uri": "[concat('https://', variables('IaaS_Name'),'12794.blob.core.windows.net/vhds/',variables('IaaS_Name'),'-iis1datadisk1.vhd')]"
+                },
+                "createOption": "Empty",
+                "diskSizeGB": "[variables('sizeOfDataDisksInGB')]"
+            },
+            {
+                "name": "datadisk2",
+                "lun": 1,
+                "vhd": {
+                    "uri": "[concat('https://', variables('IaaS_Name'),'12794.blob.core.windows.net/vhds/',variables('IaaS_Name'),'-iis1datadisk2.vhd')]"
+                },
+                "createOption": "Empty",
+                "diskSizeGB": "[variables('sizeOfDataDisksInGB')]"
+            },
+            {
+                "name": "datadisk3",
+                "lun": 2,
+                "vhd": {
+                    "uri": "[concat('https://', variables('IaaS_Name'),'12794.blob.core.windows.net/vhds/',variables('IaaS_Name'),'-iis1datadisk3.vhd')]"
+                },
+                "createOption": "Empty",
+                "diskSizeGB": "[variables('sizeOfDataDisksInGB')]"
+            },
+            {
+                "name": "datadisk4",
+                "lun": 3,
+                "vhd": {
+                    "uri": "[concat('https://', variables('IaaS_Name'),'12794.blob.core.windows.net/vhds/',variables('IaaS_Name'),'-iis1datadisk4.vhd')]"
+                },
+                "createOption": "Empty",
+                "diskSizeGB": "[variables('sizeOfDataDisksInGB')]"
+            }
+        ],
+        "diskArray2": [
+            {
+                "name": "datadisk1a",
+                "lun": 0,
+                "vhd": {
+                    "uri": "[concat('https://', variables('IaaS_Name'),'12794.blob.core.windows.net/vhds/',variables('IaaS_Name'),'-iis2datadisk1.vhd')]"
+                },
+                "createOption": "Empty",
+                "diskSizeGB": "[variables('sizeOfDataDisksInGB')]"
+            },
+            {
+                "name": "datadisk2a",
+                "lun": 1,
+                "vhd": {
+                    "uri": "[concat('https://', variables('IaaS_Name'),'12794.blob.core.windows.net/vhds/',variables('IaaS_Name'),'-iis2datadisk2.vhd')]"
+                },
+                "createOption": "Empty",
+                "diskSizeGB": "[variables('sizeOfDataDisksInGB')]"
+            },
+            {
+                "name": "datadisk3a",
+                "lun": 2,
+                "vhd": {
+                    "uri": "[concat('https://', variables('IaaS_Name'),'12794.blob.core.windows.net/vhds/',variables('IaaS_Name'),'-iis2datadisk3.vhd')]"
+                },
+                "createOption": "Empty",
+                "diskSizeGB": "[variables('sizeOfDataDisksInGB')]"
+            },
+            {
+                "name": "datadisk4a",
+                "lun": 3,
+                "vhd": {
+                    "uri": "[concat('https://', variables('IaaS_Name'),'12794.blob.core.windows.net/vhds/',variables('IaaS_Name'),'-iis2datadisk4.vhd')]"
+                },
+                "createOption": "Empty",
+                "diskSizeGB": "[variables('sizeOfDataDisksInGB')]"
+            }
+        ]        
+        
+        
+    },
+    "resources": [
+        {
+            "comments": "Generalized from resource: '/subscriptions/89f81422-77a1-4696-99f7-c930a45ee987/resourceGroups/ChevIaaS1/providers/Microsoft.Compute/availabilitySets/ChevIaaSAvailSet'.",
+            "type": "Microsoft.Compute/availabilitySets",
+            "name": "[variables('IaaS_Name')]",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "platformUpdateDomainCount": 5,
+                "platformFaultDomainCount": 3
+            },
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/89f81422-77a1-4696-99f7-c930a45ee987/resourceGroups/ChevIaaS1/providers/Microsoft.Compute/virtualMachines/iis1'.",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[concat(variables('IaaS_Name'),'-iis1')]",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "Vendor": "[parameters('Tag_Vendor')]",
+                "Cost_Center": "[parameters('Tag_Cost_Center')]",
+				"HLBO": "[parameters('Tag_HLBO')]",
+				"Environment": "[parameters(Tag_Environment')]",
+				"Resource_Roles": "[parameters(Tag_Resource_Roles')]",
+				"Business_Function": "[parameters(Tag_Business_Function')]",
+				"Support_Org": "[parameters(Tag_Support_Org')]",
+				"Facilities": "[parameters(Tag_Facilities')]",
+                "Project_Name": "[parameters('Tag_Project_Name')]"
+            },
+            "properties": {
+                "availabilitySet": {
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('IaaS_Name'))]"
+                },
+                "hardwareProfile": {
+                    "vmSize": "[parameters('1_VM_Size')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "2012-R2-Datacenter",
+                        "version": "latest"
+                    },
+                    "dataDisks": "[take(variables('diskArray1'),variables('numDisks'))]",
+                    "osDisk": {
+                        "name": "[concat(variables('IaaS_Name'),'-iis1')]",
+                        "createOption": "FromImage",
+                        "vhd": {
+                            "uri": "[concat('https', '://', variables('IaaS_Name'),'12794', '.blob.core.windows.net', concat('/vhds/', variables('IaaS_Name'), '-iis1','201671191813.vhd'))]"
+                        },
+                        "caching": "ReadWrite"
+                    }
+                },
+                "osProfile": {
+                    "computerName": "[concat(variables('IaaS_Name'),'-iis1')]",
+                    "adminUsername": "[parameters('2_IaaS_User_Name')]",
+                    "windowsConfiguration": {
+                        "provisionVMAgent": true,
+                        "enableAutomaticUpdates": true
+                    },
+                    "adminPassword": "[variables('3_IaaS_Password')]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('IaaS_Name'), 'iis1914'))]"
+                        }
+                    ]
+                }
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/availabilitySets', variables('IaaS_Name'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('IaaS_Name'), '12794'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('IaaS_Name'), 'iis1914'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/89f81422-77a1-4696-99f7-c930a45ee987/resourceGroups/ChevIaaS1/providers/Microsoft.Compute/virtualMachines/iis2'.",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[concat(variables('IaaS_Name'),'-iis2')]",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "Vendor": "[parameters('Tag_Vendor')]",
+                "Cost_Center": "[parameters('Tag_Cost_Center')]",
+				"HLBO": "[parameters('Tag_HLBO')]",
+				"Environment": "[parameters(Tag_Environment')]",
+				"Resource_Roles": "[parameters(Tag_Resource_Roles')]",
+				"Business_Function": "[parameters(Tag_Business_Function')]",
+				"Support_Org": "[parameters(Tag_Support_Org')]",
+				"Facilities": "[parameters(Tag_Facilities')]",
+                "Project_Name": "[parameters('Tag_Project_Name')]"
+            },
+            "properties": {
+                "availabilitySet": {
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('IaaS_Name'))]"
+                },
+                "hardwareProfile": {
+                    "vmSize": "[parameters('1_VM_Size')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "2012-R2-Datacenter",
+                        "version": "latest"
+                    },
+                    "dataDisks": "[take(variables('diskArray2'),variables('numDisks'))]",
+                    "osDisk": {
+                        "name": "[concat(variables('IaaS_Name'),'-iis2')]",
+                        "createOption": "FromImage",
+                        "vhd": {
+                            "uri": "[concat('https', '://', variables('IaaS_Name'), '12794', '.blob.core.windows.net', concat('/vhds/', variables('IaaS_Name'), '-iis2','201671215645.vhd'))]"
+                        },
+                        "caching": "ReadWrite"
+                    }
+                },
+                "osProfile": {
+                    "computerName": "[concat(variables('IaaS_Name'),'-iis2')]",
+                    "adminUsername": "[parameters('2_IaaS_User_Name')]",
+                    "windowsConfiguration": {
+                        "provisionVMAgent": true,
+                        "enableAutomaticUpdates": true
+                    },
+                    "adminPassword": "[variables('3_IaaSs_Password')]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('IaaS_Name'), 'iis2475'))]"
+                        }
+                    ]
+                }
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/availabilitySets', variables('IaaS_Name'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', concat(variables('IaaS_Name'),'12794'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('IaaS_Name'), 'iis2475'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/89f81422-77a1-4696-99f7-c930a45ee987/resourceGroups/ChevIaaS1/providers/Microsoft.Network/loadBalancers/ChevIaaSLB'.",
+            "type": "Microsoft.Network/loadBalancers",
+            "name": "[variables('IaaS_Name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "frontendIPConfigurations": [
+                    {
+                        "name": "LoadBalancerFrontEnd",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('IaaS_Name'))]"
+                            }
+                        }
+                    }
+                ],
+                "backendAddressPools": [
+                    {
+                        "name": "LBPool"
+                    }
+                ],
+                "loadBalancingRules": [],
+                "probes": [],
+                "inboundNatRules": [],
+                "outboundNatRules": [],
+                "inboundNatPools": []
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', variables('IaaS_Name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/89f81422-77a1-4696-99f7-c930a45ee987/resourceGroups/ChevIaaS1/providers/Microsoft.Network/networkInterfaces/iis1914'.",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[concat(variables('IaaS_Name'), 'iis1914')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAddress": "10.0.0.4",
+                            "privateIPAllocationMethod": "static",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('IaaS_Name'),'iis1'))]"
+                            },
+                            "subnet": {
+                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('IaaS_Name')), '/subnets/default')]"
+                            },
+                            "loadBalancerBackendAddressPools": [
+                                {
+                                    "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('IaaS_Name')), '/backendAddressPools/LBPool')]"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableIPForwarding": false,
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('IaaS_Name'))]"
+                }
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('IaaS_Name'),'iis1'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('IaaS_Name'))]",
+                "[resourceId('Microsoft.Network/loadBalancers', variables('IaaS_Name'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('IaaS_Name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/89f81422-77a1-4696-99f7-c930a45ee987/resourceGroups/ChevIaaS1/providers/Microsoft.Network/networkInterfaces/iis2475'.",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[concat(variables('IaaS_Name'), 'iis2475')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAddress": "10.0.0.5",
+                            "privateIPAllocationMethod": "static",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('IaaS_Name'),'iis2'))]"
+                            },
+                            "subnet": {
+                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('IaaS_Name')), '/subnets/default')]"
+                            },
+                            "loadBalancerBackendAddressPools": [
+                                {
+                                    "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('IaaS_Name')), '/backendAddressPools/LBPool')]"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableIPForwarding": false,
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('IaaS_Name'))]"
+                }
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('IaaS_Name'),'iis2'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('IaaS_Name'))]",
+                "[resourceId('Microsoft.Network/loadBalancers', variables('IaaS_Name'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('IaaS_Name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/89f81422-77a1-4696-99f7-c930a45ee987/resourceGroups/ChevIaaS1/providers/Microsoft.Network/networkSecurityGroups/iis'.",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[variables('IaaS_Name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "http",
+                        "properties": {
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "80",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 100,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "default-allow-rdp",
+                        "properties": {
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "3389",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 1000,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            },
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/89f81422-77a1-4696-99f7-c930a45ee987/resourceGroups/ChevIaaS1/providers/Microsoft.Network/publicIPAddresses/ChevIaaSPublicIP'.",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[variables('IaaS_Name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "publicIPAllocationMethod": "static",
+                "idleTimeoutInMinutes": 4
+            },
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/89f81422-77a1-4696-99f7-c930a45ee987/resourceGroups/ChevIaaS1/providers/Microsoft.Network/publicIPAddresses/iis1'.",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[concat(variables('IaaS_Name'),'iis1')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "publicIPAllocationMethod": "static",
+                "idleTimeoutInMinutes": 4
+            },
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/89f81422-77a1-4696-99f7-c930a45ee987/resourceGroups/ChevIaaS1/providers/Microsoft.Network/publicIPAddresses/iis2'.",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[concat(variables('IaaS_Name'),'iis2')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "publicIPAllocationMethod": "static",
+                "idleTimeoutInMinutes": 4
+            },
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/89f81422-77a1-4696-99f7-c930a45ee987/resourceGroups/ChevIaaS1/providers/Microsoft.Network/virtualNetworks/ChevIaaS1'.",
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[variables('IaaS_Name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "10.0.0.0/16"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "default",
+                        "properties": {
+                            "addressPrefix": "10.0.0.0/24"
+                        }
+                    }
+                ]
+            },
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/89f81422-77a1-4696-99f7-c930a45ee987/resourceGroups/cheviaas1/providers/Microsoft.Storage/storageAccounts/cheviaas12794'.",
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "Premium_LRS",
+                "tier": "Premium"
+            },
+            "kind": "Storage",
+            "name": "[concat(variables('IaaS_Name'),'12794')]",
+            "apiVersion": "2016-01-01",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "Vendor": "[parameters('Tag_Vendor')]",
+                "Cost_Center": "[parameters('Tag_Cost_Center')]",
+				"HLBO": "[parameters('Tag_HLBO')]",
+				"Environment": "[parameters(Tag_Environment')]",
+				"Resource_Roles": "[parameters(Tag_Resource_Roles')]",
+				"Business_Function": "[parameters(Tag_Business_Function')]",
+				"Support_Org": "[parameters(Tag_Support_Org')]",
+				"Facilities": "[parameters(Tag_Facilities')]",
+                "Project_Name": "[parameters('Tag_Project_Name')]"
+            },
+            "properties": {},
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/89f81422-77a1-4696-99f7-c930a45ee987/resourceGroups/cheviaas1/providers/Microsoft.Storage/storageAccounts/cheviaas19838'.",
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "Storage",
+            "name": "[concat(variables('IaaS_Name'),'19838')]",
+            "apiVersion": "2016-01-01",
+            "location": "[resourceGroup().location]",
+            "tags": {},
+            "properties": {},
+            "resources": [],
+            "dependsOn": []
+        }
+    ],
+    "outputs": {
+        "location" : {
+            "type" : "string",
+            "value": "[resourceGroup().location]"
+        },
+        "os" : {
+            "type" : "string",
+            "value": "[concat(reference(concat(variables('IaaS_Name'),'-iis1')).storageProfile.imageReference.offer, ' ', reference(concat(variables('IaaS_Name'),'-iis1')).storageProfile.imageReference.sku)]"
+        },
+        "login" : {
+            "type" : "string",
+            "value": "[reference(concat(variables('IaaS_Name'),'-iis1')).osProfile.adminUsername]"
+        },
+        "vm size" : {
+            "type" : "string",
+            "value": "[reference(concat(variables('IaaS_Name'),'-iis1')).hardwareProfile.vmSize]"
+        },
+        "computer name 1" : {
+            "type" : "string",
+            "value": "[reference(concat(variables('IaaS_Name'),'-iis1')).osProfile.computerName]"
+        },
+        "ip address 1" : {
+            "type" : "string",
+            "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', concat(variables('IaaS_Name'),'iis1'))).ipAddress]"
+        },
+        "computer name 2" : {
+            "type" : "string",
+            "value": "[reference(concat(variables('IaaS_Name'),'-iis2')).osProfile.computerName]"
+        },
+        "ip address 2" : {
+            "type" : "string",
+            "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', concat(variables('IaaS_Name'),'iis2'))).ipAddress]"
+        }
+    }
+
+
+}
